@@ -1,8 +1,9 @@
 // src/components/CommentItem.tsx
-import React from "react";
 import type { Comment } from "../../types/comment";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
+import s from "./Comment.module.scss";
+import { useTheme } from "../../context/ThemeContext";
 
 interface CommentItemProps {
     comment: Comment;
@@ -24,17 +25,20 @@ function CommentItem({
     const handleReplySubmit = (content: string) => {
         onReplySubmit(comment.id, content);
     };
+    
+    const { primaryColor } = useTheme();
 
     return (
-        <div className="comment-item">
-            <div className="comment-content">
-                <p className="comment-author">{comment.user}</p>
-                <p className="comment-text">{comment.content}</p>
-                <div className="comment-actions">
+        <div className={s.commentItem}>
+            <div className={s.commentContent}>
+                <p className={s.commentAuthor}>{comment.user}</p>
+                <p className={s.commentText}>{comment.content}</p>
+                <div className={s.commentActions}>
                     <span>{new Date(comment.date).toLocaleString()}</span>
                     <button
                         onClick={() => onReplyClick(comment.id)}
-                        className="reply-btn"
+                        className={s.replyBtn}
+                        style={{ color: primaryColor }}
                     >
                         回复
                     </button>
@@ -52,7 +56,7 @@ function CommentItem({
 
             {/* 递归渲染子评论 */}
             {comment.replies && comment.replies.length > 0 && (
-                <div className="comment-replies">
+                <div className={s.commentReplies}>
                     <CommentList
                         comments={comment.replies}
                         activeReplyId={activeReplyId}

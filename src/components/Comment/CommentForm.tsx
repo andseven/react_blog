@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import s from "./Comment.module.scss";
+import { useTheme } from "../../context/ThemeContext";
 
 interface CommentFormProps {
     onSubmit: (content: string) => void;
@@ -20,8 +22,10 @@ function CommentForm({
         setContent("");
     };
 
+    const { primaryColor } = useTheme();
+
     return (
-        <form className="comment-form" onSubmit={handleSubmit}>
+        <form className={s.commentForm} onSubmit={handleSubmit}>
             <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -29,17 +33,17 @@ function CommentForm({
                 rows={4}
                 required
             />
-            <div className="form-actions">
+            <div className={s.formActions}>
                 {onCancel && (
                     <button
                         type="button"
-                        className="cancel-btn"
+                        className={s.cancelBtn}
                         onClick={onCancel}
                     >
                         取消
                     </button>
                 )}
-                <button type="submit">发布</button>
+                <button type="submit" style={{ '--button-bg-color': primaryColor } as React.CSSProperties}>发布</button>
             </div>
         </form>
     );

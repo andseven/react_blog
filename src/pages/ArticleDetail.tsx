@@ -59,7 +59,10 @@ const ArticleDetail: React.FC = () => {
         );
     };
 
-    const totalCommentCount = useMemo(() => countComments(comments), [comments]);
+    const totalCommentCount = useMemo(
+        () => countComments(comments),
+        [comments]
+    );
 
     useEffect(() => {
         if (!id) {
@@ -168,7 +171,7 @@ const ArticleDetail: React.FC = () => {
 
     return (
         <div className={s.container}>
-            <article className={s.article}>
+            <article className={`${s.contentBlock} ${s.article}`}>
                 <header className={s.header}>
                     {/* ...文章头部内容不变... */}
                     <h1 className={s.title}>{article.title}</h1>
@@ -240,17 +243,15 @@ const ArticleDetail: React.FC = () => {
                         }}
                     />
                 </div>
-
-                {/* ✅ 最终的评论区渲染 */}
-                <div className={s.comment}>
-                    <CommentSection
-                        comments={comments} // 使用我们单独管理的 comments state
-                        totalCount={totalCommentCount}
-                        onTopLevelSubmit={handleTopLevelSubmit} // 传递顶层评论提交函数
-                        onReplySubmit={handleReplySubmit} // 传递回复提交函数
-                    />
-                </div>
             </article>
+            <div className={`${s.contentBlock} ${s.commentWrapper}`}>
+                <CommentSection
+                    comments={comments}
+                    totalCount={totalCommentCount}
+                    onTopLevelSubmit={handleTopLevelSubmit}
+                    onReplySubmit={handleReplySubmit}
+                />
+            </div>
         </div>
     );
 };

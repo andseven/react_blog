@@ -10,13 +10,18 @@
 .container {
     padding: 24px;
     display: flex;
-    justify-content: center;
+    flex-direction: column; // ✅ 1. 将主轴方向改为垂直
+    align-items: center; // ✅ 2. 使用 align-items 来实现水平居中
     background-color: var(--background-color);
 }
 
-.article {
-    max-width: 800px;
+.contentBlock {
     width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+.article {
     background-color: var(--card-background-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -70,8 +75,7 @@
     color: var(--text-color);
     line-height: 1.8;
     font-size: 1.1rem;
-
-    // ... (h2, p, a, blockquote 等样式保持不变) ...
+    word-break: break-word; // 防止长单词或链接溢出
 
     .inlineCode {
         background-color: var(--border-color);
@@ -116,4 +120,12 @@
     tbody tr:nth-child(even) {
         background-color: rgba(128, 128, 128, 0.05);
     }
+}
+
+.commentWrapper {
+    margin: 60px 40px auto;
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }

@@ -1,7 +1,7 @@
 // src/components/CommentList.tsx
-import React from "react";
 import type { Comment } from "../../types/comment";
 import CommentItem from "./CommentItem";
+import s from "./Comment.module.scss";
 
 interface CommentListProps {
     comments: Comment[];
@@ -13,7 +13,7 @@ interface CommentListProps {
 
 function CommentList({ comments, ...props }: CommentListProps) {
     return (
-        <div className="comment-list">
+        <div className={s.commentList}>
             {comments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} {...props} />
             ))}
