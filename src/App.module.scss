@@ -1,0 +1,59 @@
+// src/App.module.scss
+
+// 使用 :global() 告诉 CSS Modules, 括号内的选择器是全局的，不需要进行模块化转换。
+// 这样 :root 就会原样输出到最终的 CSS 文件中。
+:global(:root) {
+    /* 定义浅色模式下的变量 */
+    --background-color: #f6f8fa; // 用一个稍微柔和的白色代替纯白
+    --text-color: #24292e; // 用 GitHub 的主文本色，对比更清晰
+    --card-background-color: #ffffff;
+    --border-color: #d1d5da;
+    // * {
+    //     outline: 1px solid red;
+    // }
+}
+
+// 同样，这个属性选择器也必须是全局的，才能正确应用在 <html> 标签上
+:global([data-theme="dark"]) {
+    /* 定义暗色模式下的变量 */
+    --background-color: #0d1117; // 用 GitHub 的暗色背景
+    --text-color: #c9d1d9; // 用 GitHub 的暗色文本
+    --card-background-color: #161b22;
+    --border-color: #30363d;
+}
+
+// body 标签选择器也需要是全局的
+:global(body) {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑过渡效果 */
+
+    // (可选) 优化字体渲染
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* src/App.module.scss */
+
+.mainContent {
+    // Sets a maximum width for your content. It won't get wider than 1280px.
+    max-width: 1280px;
+
+    // Horizontally centers the content block in the page.
+    margin: 0 auto;
+
+    // Provides spacing on the sides for smaller screens.
+    padding: 24px;
+
+    // Ensures padding is calculated inside the width, preventing overflow.
+    box-sizing: border-box;
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}

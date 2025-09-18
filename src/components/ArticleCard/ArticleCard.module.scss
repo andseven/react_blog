@@ -1,0 +1,37 @@
+/* src/components/ArticleCard/ArticleCard.module.scss */
+
+.articleCard {
+    // Use max-width for responsiveness instead of a fixed width
+    max-width: 550px;
+    width: 100%;
+    margin: 16px;
+    // Use CSS variables to adapt to light/dark themes
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+
+    // Correctly target the global Ant Design class from within the module
+    :global(.ant-card-meta-title) {
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--text-color); // Use theme variable
+    }
+}
+
+.summary {
+    // Use theme variable
+    color: var(--text-color);
+    opacity: 0.8; // Use opacity for secondary text instead of a fixed color
+    margin: 8px 0;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.meta {
+    font-size: 12px;
+    color: var(--text-color);
+    opacity: 0.6;
+}

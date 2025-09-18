@@ -1,0 +1,12 @@
+.finally {
+    grid-column: 1 / -1; /* 🚀 跨越整个网格，独占一行 */
+    text-align: center;
+    margin-top: 16px;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(550px, 1fr));
+    gap: 16px;
+    justify-items: center; /* 居中对齐每个卡片 */
+}

@@ -1,0 +1,75 @@
+/* src/components/Nav/index.module.scss */
+
+.navbarCenter {
+    // 1. 设置为相对定位，作为子元素绝对定位的参照物
+    position: relative; 
+    
+    // 2. 给导航栏一个固定的高度，方便子元素垂直居中
+    height: 64px; 
+
+    // 3. 保持之前的居中和最大宽度设置
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.menuContainer {
+    // 4. 将菜单容器设置为绝对定位
+    position: absolute;
+    
+    // 5. 使用 transform 实现完美的水平和垂直居中
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.actionsContainer {
+    // 6. 将按钮容器也设置为绝对定位
+    position: absolute;
+
+    // 7. 定位到父容器的右侧边缘（24px是父容器的内边距）
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%); // 只需垂直居中
+
+    // 8. 内部使用 flex 布局来处理按钮之间的间距
+    display: flex;
+    align-items: center;
+    gap: 16px; // 设置按钮之间的间距
+}
+
+:global(.ant-menu.ant-menu-horizontal) {
+    background: transparent !important;
+    border-bottom: none !important;
+
+    // 1. 强制设置所有菜单项（包括未选中、有链接、有图标）的默认颜色
+    .ant-menu-item,
+    .ant-menu-item a,
+    .ant-menu-item .anticon {
+        color: var(--text-color) !important;
+        opacity: 0.85; // 给未选中的菜单项一个稍微柔和的透明度
+        transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    // 2. 设置鼠标悬浮时的颜色
+    .ant-menu-item:hover,
+    .ant-menu-item:hover a,
+    .ant-menu-item:hover .anticon {
+        color: var(--text-color) !important;
+        opacity: 0.85;
+    }
+
+    // 3. 设置选中项的颜色（使用 antd 的主色调变量）
+    .ant-menu-item-selected,
+    .ant-menu-item-selected a,
+    .ant-menu-item-selected .anticon {
+        color: var(--ant-color-primary) !important; // antd v5 的主色调 token
+        opacity: 0.85;
+
+        &::after {
+            border-bottom-color: var(--ant-color-primary) !important;
+        }
+    }
+}
