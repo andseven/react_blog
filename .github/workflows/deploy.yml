@@ -30,4 +30,4 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages # 部署到 gh-pages 分支
-        folder: build # 构建输出目录
+        folder: dist # 构建输出目录

@@ -24,7 +24,7 @@
 - [ ] 实现文章上传功能  
 - [ ] 搭建 Home 首页  
 - [ ] 优化整体样式与交互体验  
-- [ ] github actions
+- [ ] github actions优化
 
 ---
 
