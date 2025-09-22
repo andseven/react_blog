@@ -3,7 +3,7 @@
 import React from "react";
 import { generate, green, presetPalettes, red } from "@ant-design/colors";
 import { ColorPicker } from "antd";
-import type { ColorPickerProps, Color } from "antd";
+import type { ColorPickerProps } from "antd";
 import { useTheme } from "../../context/ThemeContext"; // 引入 useTheme
 
 type Presets = Required<ColorPickerProps>["presets"][number];
@@ -28,8 +28,8 @@ const ColorPickerButton: React.FC = () => {
     });
 
     // 2. 当颜色选择完成时，调用全局的 setPrimaryColor 更新主题
-    const handleColorChange = (color: Color) => {
-        setPrimaryColor(color.toHexString());
+    const handleColorChange: ColorPickerProps["onChangeComplete"] = (color) => {
+        setPrimaryColor(color.toHexString?.() ?? color);
     };
 
     return (

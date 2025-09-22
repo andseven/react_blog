@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Result, Avatar, Divider, message } from "antd"; // 引入 antd 的 message 组件用于提示
 import { UserOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
-
 import { db } from "../cloudbase/cloudbase";
 import type { Article } from "../types/article";
 import type { Comment } from "../types/comment"; // ✅ 引入 Comment 类型
@@ -13,6 +14,7 @@ import { WEBSITE_TITLE } from "../config/siteConfig";
 import remarkGfm from "remark-gfm";
 import "@ant-design/v5-patch-for-react-19";
 import CommentSection from "../components/Comment/CommentSection";
+
 
 // ✅ 将递归添加回复的辅助函数放在这里，或者放到一个公共的 utils 文件中
 const addReplyToTree = (
@@ -85,9 +87,14 @@ const ArticleDetail: React.FC = () => {
                 } else {
                     setArticle(null);
                 }
-            } catch (err: any) {
-                console.error("获取文章失败:", err);
-                setError("加载文章失败，请稍后重试。");
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    console.error("获取文章失败:", err.message);
+                    setError("加载文章失败，请稍后重试。");
+                } else {
+                    console.error("获取文章失败:", err);
+                    setError("加载文章失败，请稍后重试。");
+                }
             } finally {
                 setLoading(false);
             }
@@ -221,7 +228,7 @@ const ArticleDetail: React.FC = () => {
                                 className,
                                 children,
                                 ...props
-                            }) => {
+                            }: any) => {
                                 const match = /language-(\w+)/.exec(
                                     className || ""
                                 );
