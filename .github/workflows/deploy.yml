@@ -13,6 +13,14 @@ jobs:
     - name: 读取仓库内容
       uses: actions/checkout@v4
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+
     - name: 安装依赖并打包
       run: |
         pnpm install
