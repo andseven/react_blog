@@ -1,31 +1,25 @@
 name: Deploy React App
+on: push
 
-on:
-  push:
-    branches: [ main ]
+permissions:
+  contents: write
 
 jobs:
-  build:
+  pnpm-build:
+    name: pnpm-build工作
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: 读取仓库内容
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+    - name: 安装依赖并打包
+      run: |
+        pnpm install
+        pnpm run build
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist   # 根据你的项目调整
-          force_orphan: true
+    - name: 部署
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages # 部署到 gh-pages 分支
+        folder: build # 构建输出目录
