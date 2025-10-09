@@ -2,19 +2,20 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Spin, Result, Avatar, Divider, message } from "antd"; // 引入 antd 的 message 组件用于提示
+import { Spin, Result, Avatar, Divider, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
+// 引入语法高亮库和主题
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { db } from "../cloudbase/cloudbase";
 import type { Article } from "../types/article";
-import type { Comment } from "../types/comment"; // ✅ 引入 Comment 类型
+import type { Comment } from "../types/comment";
 import s from "./ArticleDetail.module.scss";
-import CodeBlock from "../components/CodeBlock/CodeBlock";
 import { WEBSITE_TITLE } from "../config/siteConfig";
 import remarkGfm from "remark-gfm";
 import "@ant-design/v5-patch-for-react-19";
 import CommentSection from "../components/Comment/CommentSection";
-
 
 // ✅ 将递归添加回复的辅助函数放在这里，或者放到一个公共的 utils 文件中
 const addReplyToTree = (
@@ -204,47 +205,106 @@ const ArticleDetail: React.FC = () => {
 
                 <div className={s.content}>
                     <ReactMarkdown
-                        // ...ReactMarkdown 配置不变...
                         children={article.content}
                         remarkPlugins={[remarkGfm]}
                         components={{
-                            p: ({ node, children }) => {
-                                if (
-                                    node?.children &&
-                                    node.children.length === 1 &&
-                                    // @ts-expect-error: react-markdown 的类型定义不包含 tagName
-                                    node.children[0].tagName === "code"
-                                ) {
-                                    return <>{children}</>;
-                                }
-                                return (
-                                    <div className={s.paragraph}>
-                                        {children}
-                                    </div>
-                                );
-                            },
-                            code: ({
+                            code({
+                                node,
                                 inline,
                                 className,
                                 children,
                                 ...props
-                            }: any) => {
+                            }: {
+                                node?: any;
+                                inline?: boolean;
+                                className?: string;
+                                children: React.ReactNode;
+                            }) {
                                 const match = /language-(\w+)/.exec(
                                     className || ""
                                 );
-                                const codeString = String(children).replace(
-                                    /\n$/,
-                                    ""
-                                );
-                                return !inline ? (
-                                    <CodeBlock
-                                        language={match ? match[1] : null}
-                                        value={codeString}
-                                    />
-                                ) : (
-                                    <code className={s.inlineCode} {...props}>
-                                        {children}
-                                    </code>
+                                const codeText = String(children).trim();
+                                const codeToCopy = codeText.replace(/\n$/, "");
+
+                                const handleCopy = () => {
+                                    navigator.clipboard
+                                        .writeText(codeToCopy)
+                                        .then(() => {
+                                            message.success(
+                                                "代码已复制到剪贴板！"
+                                            );
+                                        })
+                                        .catch((err) => {
+                                            message.error("复制失败，请重试。");
+                                            console.error("复制操作失败:", err);
+                                        });
+                                };
+
+                                const isBlockButShouldBeInline =
+                                    !inline && !codeText.includes("\n");
+
+                                if (inline || isBlockButShouldBeInline) {
+                                    return (
+                                        <code
+                                            className={`${s.inlineCode} ${
+                                                className || ""
+                                            }`}
+                                            style={{
+                                                whiteSpace: "pre-wrap",
+                                                wordBreak: "break-all",
+                                            }}
+                                            {...props}
+                                        >
+                                            {children}
+                                        </code>
+                                    );
+                                }
+
+                                return (
+                                    <div
+                                        style={{
+                                            position: "relative",
+                                            margin: "1em 0",
+                                        }}
+                                    >
+                                        <button
+                                            onClick={handleCopy}
+                                            style={{
+                                                position: "absolute",
+                                                top: "0.5em",
+                                                right: "0.5em",
+                                                zIndex: 1,
+                                                border: "1px solid #555",
+                                                background: "#3a3a3a",
+                                                color: "#ccc",
+                                                padding: "2px 8px",
+                                                borderRadius: "5px",
+                                                cursor: "pointer",
+                                                fontSize: "0.8em",
+                                                opacity: 0.7,
+                                            }}
+                                            onMouseOver={(e) =>
+                                                (e.currentTarget.style.opacity =
+                                                    "1")
+                                            }
+                                            onMouseOut={(e) =>
+                                                (e.currentTarget.style.opacity =
+                                                    "0.7")
+                                            }
+                                        >
+                                            复制
+                                        </button>
+                                        <SyntaxHighlighter
+                                            style={atomDark}
+                                            language={
+                                                match ? match[1] : undefined
+                                            }
+                                            PreTag="div"
+                                            {...props}
+                                        >
+                                            {codeToCopy}
+                                        </SyntaxHighlighter>
+                                    </div>
                                 );
                             },
                         }}
