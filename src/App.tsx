@@ -32,7 +32,7 @@ const AppContent: React.FC = () => {
                 },
             }}
         >
-            <Router>
+            <Router basename="/react_blog">
                 <BackgroundCanvas color={primaryColor} />
                 <NavBar />
                 <BackToTop />

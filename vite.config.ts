@@ -17,7 +17,7 @@ export default defineConfig({
 
   // 关键：修改 base 配置
   // 将 "/<YOUR_REPO_NAME>/" 替换成你的仓库名
-  base: "/react_blog", 
+  base: "/react_blog/",
 
   build: {
     outDir: "dist", // 打包文件的输出目录
