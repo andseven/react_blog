@@ -3,7 +3,7 @@ import cloudbase from "@cloudbase/js-sdk";
 
 // 初始化一次
 const app = cloudbase.init({
-    env: import.meta.env.VITE_CLOUDBASE_ENV,
+    env: "cloud1-5ggkn0jjf3cb85b9",
 });
 
 // 匿名登录（可选，保证前端 SDK 有权限）
