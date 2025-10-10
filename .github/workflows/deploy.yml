@@ -1,47 +1,56 @@
-# .github/workflows/deploy.yml
-
 name: Deploy React App to GitHub Pages
 
 on:
-    # 只在 push 到 main 分支时触发
-    push:
-        branches:
-            - main
-    # 允许手动触发
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-# 需要写入 gh-pages 分支的权限
 permissions:
-    contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-    build-and-deploy: # 给 job 一个更清晰的名字
-        name: Build and Deploy
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
 
-            # 使用 pnpm/action-setup 来安装和缓存 pnpm
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8 # 指定 pnpm 版本
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-            # 使用 setup-node 的缓存功能
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20"
-                  cache: "pnpm" # 缓存 pnpm 的依赖项
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
 
-            - name: Install dependencies and Build
-              run: |
-                  pnpm install
-                  pnpm run build
+      - name: Install dependencies
+        run: pnpm install
 
-            - name: Deploy to gh-pages
-              uses: JamesIves/github-pages-deploy-action@v4
-              with:
-                  branch: gh-pages # 部署到 gh-pages 分支
-                  folder: dist # 从 dist 目录部署
+      - name: Build
+        run: pnpm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
