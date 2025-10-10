@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { db } from "../cloudbase/cloudbase"; // 引入统一实例
 import BatchImportMarkdown from "../cloudbase/BatchImportMarkdown";
-import GetTitleButton from "../cloudbase/GetTitleButton";
+// import GetTitleButton from "../cloudbase/GetTitleButton";
 
 function Home() {
     const [id] = React.useState("88ce883568c9122900e1cc2b0af12e23"); // 示例文章ID
@@ -27,7 +27,7 @@ function Home() {
         <div>
             <h1>欢迎来到首页</h1>
             <BatchImportMarkdown />
-            <GetTitleButton />
+            {/* <GetTitleButton /> */}
         </div>
     );
 }

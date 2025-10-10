@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Result, Avatar, Divider, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
-// 引入语法高亮库和主题
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// [恢复懒加载] 正常导入样式对象
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// [恢复懒加载] 使用 React.lazy 动态引入体积庞大的语法高亮组件
+const SyntaxHighlighter = lazy(() =>
+    import("react-syntax-highlighter/dist/esm/prism").then((module) => ({
+        default: module.default,
+    }))
+);
 import { db } from "../cloudbase/cloudbase";
 import type { Article } from "../types/article";
 import type { Comment } from "../types/comment";
@@ -17,7 +22,7 @@ import remarkGfm from "remark-gfm";
 import "@ant-design/v5-patch-for-react-19";
 import CommentSection from "../components/Comment/CommentSection";
 
-// ✅ 将递归添加回复的辅助函数放在这里，或者放到一个公共的 utils 文件中
+// 辅助函数：在评论树中递归添加回复
 const addReplyToTree = (
     comments: Comment[],
     parentId: string,
@@ -43,7 +48,6 @@ const ArticleDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
     const [article, setArticle] = useState<Article | null>(null);
-    // ✅ 单独为 comments 创建一个 state，这样更新评论时无需重置整个 article 对象，性能更好
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,7 +57,7 @@ const ArticleDetail: React.FC = () => {
         return date.toLocaleDateString();
     };
 
-    // 递归统计嵌套评论数量
+    // 递归统计总评论数
     const countComments = (comments: Article["comments"]): number => {
         if (!comments) return 0;
         return comments.reduce(
@@ -82,20 +86,14 @@ const ArticleDetail: React.FC = () => {
                 if (res.data && res.data.length > 0) {
                     const data = res.data[0] as Article;
                     setArticle(data);
-                    // ✅ 从获取的文章数据中初始化评论状态
                     setComments(data.comments || []);
                     document.title = `${data.title} - ${WEBSITE_TITLE}`;
                 } else {
                     setArticle(null);
                 }
             } catch (err: unknown) {
-                if (err instanceof Error) {
-                    console.error("获取文章失败:", err.message);
-                    setError("加载文章失败，请稍后重试。");
-                } else {
-                    console.error("获取文章失败:", err);
-                    setError("加载文章失败，请稍后重试。");
-                }
+                console.error("获取文章失败:", err);
+                setError("加载文章失败，请稍后重试。");
             } finally {
                 setLoading(false);
             }
@@ -108,11 +106,10 @@ const ArticleDetail: React.FC = () => {
         };
     }, [id]);
 
-    // ✅ 新增：处理数据库更新的函数
+    // 更新数据库中的评论
     const updateCommentsInDB = async (updatedComments: Comment[]) => {
         if (!id) return;
         try {
-            // 使用 doc(id).update 方法更新数据库中的 comments 字段
             await db.collection("articles").doc(id).update({
                 comments: updatedComments,
             });
@@ -120,39 +117,34 @@ const ArticleDetail: React.FC = () => {
         } catch (err) {
             console.error("更新评论失败:", err);
             message.error("评论发布失败，请稍后重试。");
-            // 如果数据库更新失败，将 UI 状态回滚到更新前的状态
-            setComments(article?.comments || []);
+            setComments(article?.comments || []); // 失败时回滚状态
         }
     };
 
-    // 处理顶层评论提交的函数
+    // 提交顶层评论
     const handleTopLevelSubmit = (content: string) => {
         const newComment: Comment = {
             id: Date.now().toString(),
-            user: "匿名用户", // TODO: 替换为真实的登录用户信息
+            user: "匿名用户", // 后续可替换为真实用户
             content,
             date: new Date().toISOString(),
             replies: [],
         };
         const updatedComments = [...comments, newComment];
-        // 1. 立即更新UI，提供更好的用户体验
         setComments(updatedComments);
-        // 2. 将更新后的评论数组提交到数据库
         updateCommentsInDB(updatedComments);
     };
 
-    // 处理回复提交的函数
+    // 提交回复
     const handleReplySubmit = (parentId: string, content: string) => {
         const newReply: Comment = {
             id: Date.now().toString(),
-            user: "匿名用户", // TODO: 替换为真实的登录用户信息
+            user: "匿名用户",
             content,
             date: new Date().toISOString(),
         };
         const updatedComments = addReplyToTree(comments, parentId, newReply);
-        // 1. 立即更新UI
         setComments(updatedComments);
-        // 2. 将更新后的评论数组提交到数据库
         updateCommentsInDB(updatedComments);
     };
 
@@ -181,7 +173,6 @@ const ArticleDetail: React.FC = () => {
         <div className={s.container}>
             <article className={`${s.contentBlock} ${s.article}`}>
                 <header className={s.header}>
-                    {/* ...文章头部内容不变... */}
                     <h1 className={s.title}>{article.title}</h1>
                     <div className={s.meta}>
                         <div className={s.authorInfo}>
@@ -208,18 +199,7 @@ const ArticleDetail: React.FC = () => {
                         children={article.content}
                         remarkPlugins={[remarkGfm]}
                         components={{
-                            code({
-                                node,
-                                inline,
-                                className,
-                                children,
-                                ...props
-                            }: {
-                                node?: any;
-                                inline?: boolean;
-                                className?: string;
-                                children: React.ReactNode;
-                            }) {
+                            code({ className, children, ...props }) {
                                 const match = /language-(\w+)/.exec(
                                     className || ""
                                 );
@@ -240,10 +220,13 @@ const ArticleDetail: React.FC = () => {
                                         });
                                 };
 
-                                const isBlockButShouldBeInline =
-                                    !inline && !codeText.includes("\n");
+                                // 判断是否为内联代码：
+                                // 1. 没有 language-xxx className（代码块会有）
+                                // 2. 或者内容不包含换行符
+                                const isInlineCode =
+                                    !match && !codeText.includes("\n");
 
-                                if (inline || isBlockButShouldBeInline) {
+                                if (isInlineCode) {
                                     return (
                                         <code
                                             className={`${s.inlineCode} ${
@@ -260,51 +243,59 @@ const ArticleDetail: React.FC = () => {
                                     );
                                 }
 
+                                // 代码块渲染
                                 return (
-                                    <div
-                                        style={{
-                                            position: "relative",
-                                            margin: "1em 0",
-                                        }}
+                                    <Suspense
+                                        fallback={
+                                            <pre className={s.codeFallback}>
+                                                加载代码中...
+                                            </pre>
+                                        }
                                     >
-                                        <button
-                                            onClick={handleCopy}
+                                        <div
                                             style={{
-                                                position: "absolute",
-                                                top: "0.5em",
-                                                right: "0.5em",
-                                                zIndex: 1,
-                                                border: "1px solid #555",
-                                                background: "#3a3a3a",
-                                                color: "#ccc",
-                                                padding: "2px 8px",
-                                                borderRadius: "5px",
-                                                cursor: "pointer",
-                                                fontSize: "0.8em",
-                                                opacity: 0.7,
+                                                position: "relative",
+                                                margin: "1em 0",
                                             }}
-                                            onMouseOver={(e) =>
-                                                (e.currentTarget.style.opacity =
-                                                    "1")
-                                            }
-                                            onMouseOut={(e) =>
-                                                (e.currentTarget.style.opacity =
-                                                    "0.7")
-                                            }
                                         >
-                                            复制
-                                        </button>
-                                        <SyntaxHighlighter
-                                            style={atomDark}
-                                            language={
-                                                match ? match[1] : undefined
-                                            }
-                                            PreTag="div"
-                                            {...props}
-                                        >
-                                            {codeToCopy}
-                                        </SyntaxHighlighter>
-                                    </div>
+                                            <button
+                                                onClick={handleCopy}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "0.5em",
+                                                    right: "0.5em",
+                                                    zIndex: 1,
+                                                    border: "1px solid #555",
+                                                    background: "#3a3a3a",
+                                                    color: "#ccc",
+                                                    padding: "2px 8px",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                    fontSize: "0.8em",
+                                                    opacity: 0.7,
+                                                }}
+                                                onMouseOver={(e) =>
+                                                    (e.currentTarget.style.opacity =
+                                                        "1")
+                                                }
+                                                onMouseOut={(e) =>
+                                                    (e.currentTarget.style.opacity =
+                                                        "0.7")
+                                                }
+                                            >
+                                                复制
+                                            </button>
+                                            <SyntaxHighlighter
+                                                style={atomDark}
+                                                language={
+                                                    match ? match[1] : undefined
+                                                }
+                                                PreTag="div"
+                                            >
+                                                {codeToCopy}
+                                            </SyntaxHighlighter>
+                                        </div>
+                                    </Suspense>
                                 );
                             },
                         }}
