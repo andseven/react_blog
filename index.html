@@ -1,14 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/react_blog/assets/websitelogo-DTrZeiIa.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ablog</title>
-    <script type="module" crossorigin src="/react_blog/assets/index-CdAIJWbV.js"></script>
-    <link rel="stylesheet" crossorigin href="/react_blog/assets/index-BL37tX4N.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/react_blog/assets/websitelogo-DTrZeiIa.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ablog</title>
+        <script>
+            const redirect = sessionStorage.redirect;
+            delete sessionStorage.redirect;
+            if (redirect && redirect !== location.href) {
+                history.replaceState(null, null, redirect);
+            }
+        </script>
+      <script type="module" crossorigin src="/react_blog/assets/index-CdAIJWbV.js"></script>
+      <link rel="stylesheet" crossorigin href="/react_blog/assets/index-BL37tX4N.css">
+    </head>
+    <body>
+        <div id="root"></div>
+    </body>
 </html>
