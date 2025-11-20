@@ -6,7 +6,7 @@ import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import copy from 'copy-to-clipboard';
-import { useTheme } from '../../context/ThemeContext'; // 引入你的主题 Hook
+import { useTheme } from '../../context/useTheme';
 import s from './CodeBlock.module.scss';
 import { useState } from 'react';
 

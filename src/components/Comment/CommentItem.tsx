@@ -3,7 +3,7 @@ import type { Comment } from "../../types/comment";
 import CommentList from "./CommentList";
 import CommentForm from "./CommentForm";
 import s from "./Comment.module.scss";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../context/useTheme";
 
 interface CommentItemProps {
     comment: Comment;

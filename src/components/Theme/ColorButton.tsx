@@ -4,7 +4,7 @@ import React from "react";
 import { generate, green, presetPalettes, red } from "@ant-design/colors";
 import { ColorPicker } from "antd";
 import type { ColorPickerProps } from "antd";
-import { useTheme } from "../../context/ThemeContext"; // 引入 useTheme
+import { useTheme } from "../../context/useTheme";
 
 type Presets = Required<ColorPickerProps>["presets"][number];
 

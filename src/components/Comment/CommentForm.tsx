@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import s from "./Comment.module.scss";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../context/useTheme";
 
 interface CommentFormProps {
     onSubmit: (content: string) => void;

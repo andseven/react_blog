@@ -14,7 +14,9 @@ store.subscribe(() => {
   try {
     localStorage.setItem("theme", mode);
     localStorage.setItem("primaryColor", color);
-  } catch {}
+  } catch {
+    void 0;
+  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;
