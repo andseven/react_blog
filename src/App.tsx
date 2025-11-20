@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/Nav/NavBar";
 import { routes } from "./routes/routes";
 import BackgroundCanvas from "./components/Background/Background";
-import { useTheme } from "./context/ThemeContext";
+import { useTheme } from "./context/useTheme";
 import { ConfigProvider, theme } from "antd";
 import styles from "./App.module.scss";
 import { ThemeProvider } from "./context/ThemeContext";

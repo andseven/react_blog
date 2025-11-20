@@ -20,7 +20,13 @@ const getInitialState = (currentSearchTerm: string) => {
             const cachedState = JSON.parse(cachedJSON);
             if (cachedState.searchTerm === currentSearchTerm) {
                 cachedState.articles = cachedState.articles.map(
-                    (a: Article) => ({ ...a, date: new Date(a.date) })
+                    (a: Article) => ({
+                        ...a,
+                        date:
+                            typeof a.date === "string"
+                                ? a.date
+                                : new Date(a.date).toISOString(),
+                    })
                 );
                 return cachedState;
             }
@@ -71,13 +77,14 @@ const ArticleList: React.FC<ArticleListProps> = ({ searchTerm }) => {
                     .limit(PAGE_SIZE)
                     .get();
 
-                const newArticles: Article[] = res.data.map(
-                    (item: Article) => ({
-                        ...item,
-                        _id: item._id,
-                        date: new Date(item.date),
-                    })
-                );
+                const newArticles: Article[] = res.data.map((item: Article) => ({
+                    ...item,
+                    _id: item._id,
+                    date:
+                        typeof item.date === "string"
+                            ? item.date
+                            : new Date(item.date).toISOString(),
+                }));
 
                 const isReset = pageToFetch === 0;
                 setArticles((prev: Article[]) =>

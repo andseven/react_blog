@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { useEffect, useState, useMemo, lazy, Suspense } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Result, Avatar, Divider, message } from "antd";
@@ -52,9 +50,8 @@ const ArticleDetail: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const formatDate = (date: string | Date) => {
-        if (typeof date === "string") return date.split("T")[0];
-        return date.toLocaleDateString();
+    const formatDate = (date: string) => {
+        return date.split("T")[0];
     };
 
     // 递归统计总评论数
@@ -84,7 +81,14 @@ const ArticleDetail: React.FC = () => {
             try {
                 const res = await db.collection("articles").doc(id).get();
                 if (res.data && res.data.length > 0) {
-                    const data = res.data[0] as Article;
+                    const raw = res.data[0] as Article & { date: string | Date };
+                    const data: Article = {
+                        ...raw,
+                        date:
+                            typeof raw.date === "string"
+                                ? raw.date
+                                : new Date(raw.date).toISOString(),
+                    };
                     setArticle(data);
                     setComments(data.comments || []);
                     document.title = `${data.title} - ${WEBSITE_TITLE}`;

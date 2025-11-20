@@ -10,9 +10,8 @@ interface ArticleCardProps {
     article: Article;
 }
 
-const formatDate = (date: string | Date) => {
-    if (typeof date === "string") return date.split("T")[0]; // 保留 YYYY-MM-DD
-    return date.toLocaleDateString();
+const formatDate = (date: string) => {
+    return date.split("T")[0];
 };
 
 // 递归统计嵌套评论数量

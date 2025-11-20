@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Input } from "antd";
 import type { GetProps } from "antd";
 import { RedoOutlined } from "@ant-design/icons";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../context/useTheme";
 
 type SearchProps = GetProps<typeof Input.Search>;
 const { Search } = Input;
