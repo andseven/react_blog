@@ -40,6 +40,9 @@ jobs:
         run: |
           echo "VITE_CLOUDBASE_ENV=${{ secrets.CLOUDBASE_ENV }}" >> .env.production
 
+      - name: Debug SECRET exists
+        run: echo "ENV=${{ secrets.CLOUDBASE_ENV }}"
+
       - name: Build
         run: pnpm run build
 
