@@ -43,6 +43,15 @@ jobs:
       - name: Debug SECRET exists
         run: echo "ENV=${{ secrets.CLOUDBASE_ENV }}"
 
+      - name: Print secret existence
+        run: |
+          if [ -z "${{ secrets.CLOUDBASE_ENV }}" ]; then
+            echo "Secret not found or empty!"
+            exit 1
+          else
+            echo "Secret exists!"
+          fi
+
       - name: Build
         run: pnpm run build
 
