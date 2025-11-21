@@ -36,9 +36,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Inject production env from secrets
+      - name: Inject production env
         run: |
-          echo "VITE_CLOUDBASE_ENV=${{ secrets.CLOUDBASE_ENV }}" >> .env.production
+          printf "VITE_CLOUDBASE_ENV=%s" "${{ secrets.CLOUDBASE_ENV }}" > .env.production
+
+      - name: Debug env file
+        run: |
+          sed -n '1,10p' .env.production
 
       - name: Debug SECRET exists
         run: echo "ENV=${{ secrets.CLOUDBASE_ENV }}"
