@@ -11,7 +11,7 @@ const SyntaxHighlighter = lazy(() =>
         default: module.default,
     }))
 );
-import { db } from "../cloudbase/cloudbase";
+import { db, call } from "../cloudbase/cloudbase";
 import type { Article } from "../types/article";
 import type { Comment } from "../types/comment";
 import s from "./ArticleDetail.module.scss";
@@ -142,14 +142,12 @@ const ArticleDetail: React.FC = () => {
     const updateCommentsInDB = async (updatedComments: Comment[]) => {
         if (!id) return;
         try {
-            await db.collection("articles").doc(id).update({
-                comments: updatedComments,
-            });
+            await call("updateArticleComments", { articleId: id, comments: updatedComments });
             message.success("评论发布成功！");
         } catch (err) {
             console.error("更新评论失败:", err);
             message.error("评论发布失败，请稍后重试。");
-            setComments(article?.comments || []); // 失败时回滚状态
+            setComments(article?.comments || []);
         }
     };
 

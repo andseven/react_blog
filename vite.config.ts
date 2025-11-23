@@ -22,5 +22,16 @@ export default defineConfig({
   base: "/react_blog/",
   build: {
     outDir: "dist",
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("@cloudbase/js-sdk")) return "cloudbase";
+          if (id.includes("react-syntax-highlighter")) return "syntax";
+          if (id.includes("prism")) return "prism";
+          return undefined;
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
 });
