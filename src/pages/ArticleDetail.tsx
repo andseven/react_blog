@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, lazy, Suspense } from "react";
+import React, { useEffect, useState, useMemo, lazy, Suspense, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Result, Avatar, Divider, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
@@ -108,6 +108,34 @@ const ArticleDetail: React.FC = () => {
         return () => {
             document.title = WEBSITE_TITLE;
         };
+    }, [id]);
+
+    const POLL_INTERVAL_MS = 10000;
+    const commentsSnapshotRef = useRef<string>(JSON.stringify(comments));
+
+    useEffect(() => {
+        commentsSnapshotRef.current = JSON.stringify(comments);
+    }, [comments]);
+
+    useEffect(() => {
+        if (!id) return;
+        const poll = async () => {
+            try {
+                const res = await db.collection("articles").doc(id).get();
+                const data = res.data?.[0] as Article | undefined;
+                if (!data) return;
+                const newComments = data.comments || [];
+                const newJson = JSON.stringify(newComments);
+                if (newJson !== commentsSnapshotRef.current) {
+                    commentsSnapshotRef.current = newJson;
+                    setComments(newComments);
+                }
+            } catch (e) {
+                console.error("轮询评论失败:", e);
+            }
+        };
+        const timer = window.setInterval(poll, POLL_INTERVAL_MS);
+        return () => window.clearInterval(timer);
     }, [id]);
 
     // 更新数据库中的评论
