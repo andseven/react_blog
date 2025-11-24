@@ -14,4 +14,4 @@ const db = app.database();
 
 const call = (name: string, data: Record<string, any>) => app.callFunction({ name, data, env: envId });
 
-export { app, auth, db };
+export { app, auth, db, call };
