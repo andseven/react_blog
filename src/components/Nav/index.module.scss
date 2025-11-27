@@ -1,13 +1,22 @@
 /* src/components/Nav/index.module.scss */
 
 .navbarCenter {
-    // 1. 设置为相对定位，作为子元素绝对定位的参照物
-    position: relative; 
-    
-    // 2. 给导航栏一个固定的高度，方便子元素垂直居中
-    height: 64px; 
+    /* 1. 设置为 sticky，使导航在滚动时固定于顶部 */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 
-    // 3. 保持之前的居中和最大宽度设置
+    /* 2. 固定高度，方便子元素垂直居中 */
+    height: 64px;
+
+    /* 3. 顶栏背景和轻微模糊，兼容深色/浅色主题 */
+    background: var(--header-bg, rgba(255,255,255,0.8));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+
+    /* 4. 居中内容并限制最大宽度 */
+    display: block;
     max-width: 1280px;
     width: 100%;
     margin: 0 auto;
@@ -18,8 +27,8 @@
 .menuContainer {
     // 4. 将菜单容器设置为绝对定位
     position: absolute;
-    
-    // 5. 使用 transform 实现完美的水平和垂直居中
+
+    /* 使用 transform 实现完美的水平和垂直居中 */
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -38,6 +47,31 @@
     display: flex;
     align-items: center;
     gap: 16px; // 设置按钮之间的间距
+}
+
+/* 响应式：小屏幕时将菜单改为静态流式布局，动作按钮收叠 */
+@media (max-width: 768px) {
+    .menuContainer {
+        position: static;
+        transform: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 56px;
+    }
+
+    .actionsContainer {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        gap: 8px;
+    }
+
+    .navbarCenter {
+        height: 56px;
+        padding: 0 12px;
+    }
 }
 
 :global(.ant-menu.ant-menu-horizontal) {
